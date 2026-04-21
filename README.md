@@ -1,4 +1,4 @@
-# ðŸ›°ï¸  HyperHash: Hyperspectral Satellite Image Hashing Network
+# 🛰️ HyperHash: Hyperspectral Satellite Image Hashing Network
 
 **Sub-second content retrieval from multi-band satellite archives** | Built with real Sentinel-2 satellite data
 
@@ -9,7 +9,7 @@
 
 ---
 
-## ðŸŒ  The Problem
+## 🌍 The Problem
 
 Imagine trying to search through **billions of satellite images** where:
 - Each image has **multiple spectral bands** (not just RGB)
@@ -23,7 +23,7 @@ Traditional image retrieval is too slow. RGB-only hashing loses critical spectra
 
 ---
 
-## âœ¨ What We Built
+## ✨ What We Built
 
 ### The Core Innovation
 A **Hybrid Spectral-Spatial Deep Hashing Network** (HybridHashNet) that:
@@ -32,61 +32,65 @@ A **Hybrid Spectral-Spatial Deep Hashing Network** (HybridHashNet) that:
 |---------|-----------|
 | **Input** | Multi-spectral bands from satellites |
 | **Output** | Compact 64-bit or 128-bit binary hash codes |
-| **Compression** | Huge size reduction (MBs â†’ bytes) |
+| **Compression** | Huge size reduction (MBs -> bytes) |
 | **Retrieval Speed** | Sub-millisecond per query via FAISS/Hamming Search |
 | **Search Scale** | Millions of patches in milliseconds |
 
 ### Architecture Stages
 
 ```text
-INPUT PATCH (Multi-spectral bands, e.g., 120Ã—120 px)
-        â†“
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â””‚   STAGE 1: INPUT TENSOR           â”‚
-â”‚   Shape: (batch, bands, H, W)    â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-        â†“ Splits into branches
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â””Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â””‚ SPATIAL BRANCH   â”‚  â”‚ SPECTRAL BRANCH        â”‚
-â”‚ (What it looks   â”‚  â”‚ (What it's made of)    â”‚
-â”‚  like spatially) â”‚  â”‚ + Features extraction  â”‚
-â”‚ â†’ Dense vector   â”‚  â”‚ â†’ Dense vector         â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-        â†“              â†“
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â””‚   STAGE 3: FUSION LAYER           â”‚
-â”‚   Concatenate & Transform        â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-        â†“
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â””‚   STAGE 4: HASH LAYER             â”‚
-â”‚   FC + Tanh + Sign                â”‚
-â”‚   Output: Binary Hash Code       â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+INPUT PATCH (Multi-spectral bands, e.g., 120x120 px)
+        |
++--------------------------------------+
+|   STAGE 1: INPUT TENSOR              |
+|   Shape: (batch, bands, H, W)        |
++--------------------------------------+
+        | Splits into branches
++------------------++------------------+
+| SPATIAL BRANCH   || SPECTRAL BRANCH  |
+| (What it looks   || (What it's made  |
+|  like spatially) ||  of)             |
+| -> Dense vector  || -> Dense vector  |
++------------------++------------------+
+        |                  |
++--------------------------------------+
+|   STAGE 3: FUSION LAYER              |
+|   Concatenate & Transform            |
++--------------------------------------+
+        |
++--------------------------------------+
+|   STAGE 4: HASH LAYER                |
+|   FC + Tanh + Sign                   |
+|   Output: Binary Hash Code           |
++--------------------------------------+
 ```
 
 ---
 
-## ðŸ—ï¸  Project Structure
+## 🗂️ Project Structure
 
 ```text
 SATHash/
-â”œâ”€â”€ assets/                      # Application screenshots and demo assets
-â”œâ”€â”€ frontend/
-â”‚   â”œâ”€â”€ app.py                   # Streamlit dashboard
-â”‚   â”œâ”€â”€ generate_test_patches.py # Utilities for generating test sets
-â”‚   â”œâ”€â”€ pick_test_patches.py     # Retrieval selection utilities
-â”‚   â”œâ”€â”€ requirements.txt         # Frontend dependencies
-â”‚   â””â”€â”€ dataset/                 # Evaluation dataset (BigEarthNet)
-â”œâ”€â”€ models/
-â”‚   â””â”€â”€ v6/
-â”‚       â”œâ”€â”€ satellite-model-v6.ipynb    # Model training and architecture definition
-â”‚       â”œâ”€â”€ spectral_hash_v6.pth        # Saved PyTorch model weights
-â”‚       â”œâ”€â”€ satellite_hash_matrix_v6.npy # Embedded pre-computed database
-â”‚       â””â”€â”€ satellite_image_files_v6.json # Hash mapped file indexing
-â”œâ”€â”€ .gitignore                   # Git exceptions
-â””â”€â”€ README.md                    # This Walkthrough & Information
+├── assets/                      # Application screenshots and demo assets
+├── frontend/
+│   ├── app.py                   # Streamlit dashboard
+│   ├── generate_test_patches.py # Utilities for generating test sets
+│   ├── pick_test_patches.py     # Retrieval selection utilities
+│   ├── requirements.txt         # Frontend dependencies
+│   └── dataset/                 # Evaluation dataset (BigEarthNet)
+├── models/
+│   └── v6/
+│       ├── satellite-model-v6.ipynb    # Model training and architecture definition
+│       ├── spectral_hash_v6.pth        # Saved PyTorch model weights
+│       ├── satellite_hash_matrix_v6.npy # Embedded pre-computed database
+│       └── satellite_image_files_v6.json # Hash mapped file indexing
+├── .gitignore                   # Git exceptions
+└── README.md                    # This Walkthrough & Information
 ```
 
 ---
 
-## ðŸ’¡ Key Innovations
+## 💡 Key Innovations
 
 ### How Hamming Distance Works
 Two hash codes compared in nanoseconds:
@@ -95,25 +99,25 @@ Two hash codes compared in nanoseconds:
 Hash A: 10110011 01001101 11000010 ...
 Hash B: 10100011 01011101 11000000 ...
 XOR:    00010000 00010000 00000010 ...
-        â†“ Count set bits
+        | Count set bits
 Hamming Distance = 3 bits
 ```
-Interpretation: 3 out of bounds bits differ â†’ High similarity threshold. 
+Interpretation: 3 out of bounds bits differ -> High similarity threshold. 
 This is why retrieval is sub-millisecond: CPU XOR + popcount = nanoseconds.
 
 ### Why This Matters vs RGB-Only Hashing
-Brown soil + Brown concrete â†’ Standard RGB image hash will flag them as similar. Hyperspectral hashing uses SWIR/NIR bands, identifying true material composites, resulting in a completely different and correct separation.
+Brown soil + Brown concrete -> Standard RGB image hash will flag them as similar. Hyperspectral hashing uses SWIR/NIR bands, identifying true material composites, resulting in a completely different and correct separation.
 
 ---
 
-## ðŸš€ Walkthrough & Dashboard
+## 🚀 Walkthrough & Dashboard
 
 The Streamlit frontend lets you upload `.tif` satellite files, parses the spectral data into our Deep Hashing system, converts them into binary structures (64-bit compact code), and does cross-comparison against our offline generated FAISS-ready hash matrix.
 
 ### App Features Overview
 - **Pick or Upload**: Use an existing subset image or upload a raw Sentinel-2 `.tif`.
 - **Query Hash Visualization**: Your image translates directly into a binary string map visually depicted below the image.
-- **Microsecond Retrieval**: Computes finding the top $K$ nearest comparisons (`k=5`).
+- **Microsecond Retrieval**: Computes finding the top `K` nearest comparisons (`k=5`).
 - **Bit Differing Highlight**: Returns specific matching metadata and isolates differing bits (in red) versus the base query.
 
 ### Example Retrieval Results
@@ -128,11 +132,9 @@ For large farmlands, the spatial characteristics effectively retrieved completel
 
 ![Retrieval Result 2](assets/retrieval_output_2.png)
 
-*(Note: Please ensure you drop your two screenshot images into `assets/retrieval_output_1.png` and `assets/retrieval_output_2.png` respectively to visualize!)*
-
 ---
 
-## âš™ï¸  Installation & Usage
+## ⚙️ Installation & Usage
 
 ### 1. Prerequisites
 - Python 3.8+
@@ -144,9 +146,7 @@ Clone the repository and install requirements:
 
 ```bash
 git clone https://github.com/sahilll06/SATHash.git
-cd SATHash
-cd frontend
-
+cd SATHash/frontend
 pip install -r requirements.txt
 ```
 
@@ -160,5 +160,5 @@ This will deploy the application onto `localhost:8501` featuring the interactive
 
 ---
 
-## ðŸ“„ License
+## 📄 License
 This project is subject to the MIT License.

@@ -125,12 +125,12 @@ The Streamlit frontend lets you upload `.tif` satellite files, parses the spectr
 #### Retrieve Query 1: Broad-leaved Forest & Inland Waters
 We achieved `1.8 ms` search time capturing semantic maps visually. Differentials (`red = differing bits`) clearly isolate the accuracy based on the Hamming separation.
 
-![Retrieval Result 1](assets/retrieval_output_1.png)
+![Retrieval Result 1](assets/Screenshot%202026-04-21%20155523.png)
 
 #### Retrieve Query 2: Arable Land Cultivation 
 For large farmlands, the spatial characteristics effectively retrieved completely independent geographical nodes with exactly matched label categories `(5/5)` at sub-2 millisecond retrieval constraints.
 
-![Retrieval Result 2](assets/retrieval_output_2.png)
+![Retrieval Result 2](assets/Screenshot%202026-04-21%20165552.png)
 
 ---
 

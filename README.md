@@ -145,7 +145,7 @@ For large farmlands, the spatial characteristics effectively retrieved completel
 Clone the repository and install requirements:
 
 ```bash
-git clone https://github.com/sahilll06/SATHash.git
+git clone https://github.com/sahilll05/SATHash.git
 cd SATHash/frontend
 pip install -r requirements.txt
 ```

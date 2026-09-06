@@ -378,12 +378,12 @@ class ResidualBlockProj(nn.Module):
             nn.Conv2d(in_ch, out_ch, 1, stride=stride, bias=False),
             nn.GroupNorm(num_groups, out_ch),
         )
-        self.attention = CBAM(out_ch) if use_attention else nn.Identity()
+        self.attn = CBAM(out_ch) if use_attention else nn.Identity()
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
         out = self.block(x)
-        out = self.attention(out)
+        out = self.attn(out)
         return self.relu(out + self.skip(x))
 
 class SpectralHashNetv6(nn.Module):
@@ -429,6 +429,13 @@ def load_tif(path: str):
     with rasterio.open(path) as src:
         img = src.read().astype(np.float32)   # (10, 120, 120)
     return img
+
+def load_tif_smart(base_dir: str, fname: str):
+    for split in ["train", "validation", "test"]:
+        p = os.path.join(base_dir, split, fname)
+        if os.path.exists(p):
+            return load_tif(p)
+    return load_tif(os.path.join(base_dir, "train", fname))
 
 
 def img_to_hash(img_chw: np.ndarray, model, device) -> tuple:
@@ -544,14 +551,12 @@ with st.sidebar:
     selected_version = st.selectbox("Model Version", available_versions)
 
     default_model_path = str(models_dir / selected_version / f"spectral_hash_{selected_version}.pth")
-    default_hash_path = str(models_dir / selected_version / f"satellite_hash_vectors_{selected_version}.npy")
-    default_files_path = str(models_dir / selected_version / f"satellite_image_files_{selected_version}.json")
-
     model_path    = st.text_input("Model (.pth)", value=default_model_path)
-    hash_path     = st.text_input("Hash vectors (.npy)", value=default_hash_path)
-    files_path    = st.text_input("Image files (.json)", value=default_files_path)
-    metadata_path = st.text_input("Metadata (.parquet)", value=r"D:\Projects\others\image-hashing\dataset\big-earth-net\metadata.parquet")
-    train_path    = st.text_input("Train folder", value=r"D:\Projects\others\image-hashing\dataset\big-earth-net\BigEarthNet-S2\train")
+    
+    hash_path     = str(models_dir / selected_version / f"satellite_hash_vectors_{selected_version}.npy")
+    files_path    = str(models_dir / selected_version / f"satellite_image_files_{selected_version}.json")
+    metadata_path = r"E:\Projects\others\image-hashing\dataset\big-earth-net\metadata.parquet"
+    train_path    = r"E:\Projects\others\image-hashing\dataset\big-earth-net\BigEarthNet-S2"
 
     # ── Load all resources ──────────────────
     st.markdown("---")
@@ -724,7 +729,7 @@ with tab1:
             )
             if filtered:
                 query_fname   = filtered[idx]
-                query_img_chw = load_tif(os.path.join(train_path, query_fname))
+                query_img_chw = load_tif_smart(train_path, query_fname)
 
         else:
             uploaded = st.file_uploader("Upload a BigEarthNet .tif", type=["tif", "tiff"])
@@ -802,7 +807,7 @@ with tab1:
                     hit     = bool(set(qlabels) & set(mlabels) - {"(no label)"})
                     sim     = hamming_similarity(dist)
 
-                    mimg_chw = load_tif(os.path.join(train_path, fname))
+                    mimg_chw = load_tif_smart(train_path, fname)
                     mrgb     = to_rgb(np.transpose(mimg_chw, (1, 2, 0)))
 
                     fig_m, ax_m = plt.subplots(figsize=(3, 3))
@@ -946,7 +951,7 @@ with tab3:
     for ci, fname in enumerate(filtered_browse[:20]):
         with browse_cols[ci % 5]:
             try:
-                img_chw = load_tif(os.path.join(train_path, fname))
+                img_chw = load_tif_smart(train_path, fname)
                 rgb     = to_rgb(np.transpose(img_chw, (1, 2, 0)))
                 fig_b, ax_b = plt.subplots(figsize=(3, 3))
                 ax_b.imshow(rgb); ax_b.axis("off")

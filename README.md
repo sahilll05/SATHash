@@ -1,4 +1,4 @@
-# 🛰️ HyperHash: Hyperspectral Satellite Image Hashing Network
+# 🛰️ SpectralHashNet: Self-Supervised Spectral-Spatial Contrastive Hashing
 
 **Sub-second content retrieval from multi-band satellite archives** | Built with real Sentinel-2 satellite data
 
@@ -79,11 +79,11 @@ SATHash/
 │   ├── requirements.txt         # Frontend dependencies
 │   └── dataset/                 # Evaluation dataset (BigEarthNet)
 ├── models/
-│   └── v6/
-│       ├── satellite-model-v6.ipynb    # Model training and architecture definition
-│       ├── spectral_hash_v6.pth        # Saved PyTorch model weights
-│       ├── satellite_hash_matrix_v6.npy # Embedded pre-computed database
-│       └── satellite_image_files_v6.json # Hash mapped file indexing
+│   └── v7/
+│       ├── satellite-model-v7.ipynb    # Model training and architecture definition
+│       ├── spectral_hash_v7.pth        # Saved PyTorch model weights
+│       ├── satellite_hash_matrix_v7.npy # Embedded pre-computed database
+│       └── satellite_image_files_v7.json # Hash mapped file indexing
 ├── .gitignore                   # Git exceptions
 └── README.md                    # This Walkthrough & Information
 ```

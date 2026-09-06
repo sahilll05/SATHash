@@ -174,22 +174,6 @@ The Streamlit dashboard lets you upload a `.tif` Sentinel-2 patch, generates its
 
 ---
 
-## Citation
-
-If you use this code or the ideas in this paper, please cite:
-
-```bibtex
-@article{powar2026spectralhashnet,
-  title     = {Self-Supervised Spectral-Spatial Contrastive Hashing for Multi-Spectral Satellite Image Retrieval},
-  author    = {Powar, Sahil Shashikant and Sukale, Pranav Santosh},
-  journal   = {IEEE Geoscience and Remote Sensing Letters},
-  year      = {2026},
-  note      = {Under Review}
-}
-```
-
----
-
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

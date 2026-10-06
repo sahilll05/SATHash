@@ -192,17 +192,15 @@ def evaluate_full(q_h, db_h, q_lbl, db_lbl, metadata_df):
     db_ids = [f.replace(".tif", "") for f in db_lbl]
     
     df = metadata_df.set_index("patch_id")
-    q_labels = df.loc[q_ids].drop(columns=["split", "timestamp", "geometry"], errors="ignore").values
-    db_labels = df.loc[db_ids].drop(columns=["split", "timestamp", "geometry"], errors="ignore").values
+    q_labels = np.array([set(l) for l in df.loc[q_ids, "labels"]])
+    db_labels = np.array([set(l) for l in df.loc[db_ids, "labels"]])
     
     aps, p1, p5, p10, ndcg10 = [], [], [], [], []
     for i in range(len(q_bits)):
         dists = np.sum(q_bits[i] != d_bits, axis=1)
         order = np.argsort(dists)
         
-        q_l = q_labels[i]
-        db_l = db_labels[order]
-        hits = (np.dot(db_l, q_l) > 0).astype(float)
+        hits = np.array([len(q_labels[i] & l) > 0 for l in db_labels[order]], dtype=float)
         
         if hits.sum() == 0:
             continue
@@ -282,7 +280,8 @@ def train(seed=42):
 
     history = {"total":[], "ntxent":[], "quant":[], "indep":[], "unique_pct":[]}
     best_map = 0.0
-    ckpt_path = OUT_DIR / "spectral_hash_v6_improved.pth"
+    ckpt_path       = OUT_DIR / "spectral_hash_v6_best.pth"
+    final_ckpt_path = OUT_DIR / "spectral_hash_v6_final.pth"
 
     print(f"\nOutput: {ckpt_path.name}")
     print("-" * 65)
@@ -375,13 +374,22 @@ def train(seed=42):
                 }, ckpt_path)
                 print(f"  --> Saved best checkpoint: {ckpt_path.name}")
 
+    # Always save the final epoch model (regardless of mAP)
+    torch.save({
+        "epoch": EPOCHS, "model_state": model.state_dict(),
+        "history": history, "best_map": best_map,
+        "config": {"embed_dim": EMBED_DIM, "hash_bits": HASH_BITS, "epochs": EPOCHS}
+    }, final_ckpt_path)
+    print(f"Final (epoch {EPOCHS}) checkpoint saved: {final_ckpt_path.name}")
+
     # Save final history
     hist_path = OUT_DIR / "training_history_improved.json"
     with open(hist_path, "w") as f:
         json.dump(history, f, indent=2)
     print(f"\nTraining complete. Best mAP: {best_map:.4f}")
     print(f"History: {hist_path}")
-    print(f"Model:   {ckpt_path}")
+    print(f"Best model  : {ckpt_path}")
+    print(f"Final model : {final_ckpt_path}")
 
 
 if __name__ == "__main__":
